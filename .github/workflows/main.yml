@@ -43,6 +43,13 @@ jobs:
           unzip -q bridge.zip
           chmod +x bridge-cli-bundle-linux64/bridge-cli
 
+      - name: Setup Node.js 24
+        uses: [actions/setup-node@v4](https://github.com/actions/setup-node)
+        with:
+          node-version: '24'
+          # Optional: Enable caching for faster installs
+          cache: 'npm'
+
       # --------------------------------------------------
       # Run Polaris SAST Scan
       # --------------------------------------------------

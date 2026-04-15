@@ -31,7 +31,7 @@ jobs:
       # Verify Maven installation
       # --------------------------------------------------
       - name: Verify Maven
-        run: mvn -version
+        run: node -version
 
       # --------------------------------------------------
       # Download Black Duck Bridge CLI

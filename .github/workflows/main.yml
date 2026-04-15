@@ -1,38 +1,50 @@
 name: Polaris Scan SAST
-
-
+ 
 on:
   push:
     branches:
       - Polaris-testing
   workflow_dispatch:
-
+ 
 jobs:
   polaris:
-    runs-on: ubuntu-24.04
-
+    runs-on: ubuntu-latest
+ 
     steps:
+      # --------------------------------------------------
+      # Install Node.js 24 (MANDATORY FIX)
+      # --------------------------------------------------
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+ 
+      - name: Verify Node version
+        run: |
+          node --version
+          npm --version
+ 
       # --------------------------------------------------
       # Checkout source code
       # --------------------------------------------------
       - name: Checkout Code
         uses: actions/checkout@v4
-
+ 
       # --------------------------------------------------
-      # Setup Java (recommended LTS version)
+      # Setup Java 17
       # --------------------------------------------------
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
+ 
       # --------------------------------------------------
-      # Verify Maven installation
+      # Verify Maven
       # --------------------------------------------------
       - name: Verify Maven
-        run: node -version
-
+        run: mvn -version
+ 
       # --------------------------------------------------
       # Download Black Duck Bridge CLI
       # --------------------------------------------------
@@ -42,14 +54,7 @@ jobs:
             https://repo.blackduck.com/bds-integrations-release/com/blackduck/integration/bridge/binaries/bridge-cli-bundle/latest/bridge-cli-bundle-linux64.zip
           unzip -q bridge.zip
           chmod +x bridge-cli-bundle-linux64/bridge-cli
-
-      - name: Setup Node.js 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          # Optional: Enable caching for faster installs
-          cache: 'npm'
-
+ 
       # --------------------------------------------------
       # Run Polaris SAST Scan
       # --------------------------------------------------
@@ -57,15 +62,14 @@ jobs:
         env:
           POLARIS_SERVER_URL: ${{ vars.POLARIS_SERVER_URL }}
           POLARIS_ACCESS_TOKEN: ${{ secrets.POLARIS_ACCESS_TOKEN }}
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
         run: |
           ./bridge-cli-bundle-linux64/bridge-cli \
             --stage polaris \
             polaris.serverUrl=$POLARIS_SERVER_URL \
             polaris.accessToken=$POLARIS_ACCESS_TOKEN \
-            polaris.application.name=Shivam_wg_app \
-            polaris.project.name= wg \
-            polaris.branch.name=main \
+            polaris.application.name=Nirmal_SCM \
+            polaris.project.name=WebGoat \
+            polaris.branch.name=Polaris-testing \
             polaris.assessment.types=SAST \
             polaris.waitForScan=true \
             coverity.build.command="mvn clean install -DskipTests"
